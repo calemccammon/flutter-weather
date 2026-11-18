@@ -30,6 +30,7 @@ laid out as [milestones](../../milestones) and [issues](../../issues).
 | Map | `maplibre_gl` |
 | Dates and numbers | `intl` |
 | Test fakes | `mocktail` |
+| Static analysis | `flutter_lints`, `riverpod_lint` (analyzer plugin), strict analyzer modes |
 
 Any of these can be swapped; nothing depends on them yet.
 
@@ -42,7 +43,8 @@ flutter pub get
 flutter run            # pick the emulator or a connected phone
 flutter run -d linux   # desktop window
 flutter run -d chrome  # web; needs CHROME_EXECUTABLE set to a Chromium browser
-flutter analyze
+flutter analyze        # rules in analysis_options.yaml; any finding fails CI
+dart format .          # CI checks formatting too
 flutter test
 ```
 

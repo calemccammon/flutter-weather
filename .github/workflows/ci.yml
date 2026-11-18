@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   check:
-    name: Analyze and test
+    name: Format, analyze and test
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -27,6 +27,7 @@ jobs:
           cache: true
       - run: flutter pub get
       - run: dart format --output=none --set-exit-if-changed .
+      # Fails on any finding, infos included. Rules are in analysis_options.yaml.
       - run: flutter analyze
       # `flutter test` fails when there is no test folder yet.
       - name: Test
