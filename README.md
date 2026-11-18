@@ -58,3 +58,10 @@ needs a fallback there (see the map issues).
 format check, `flutter analyze`, tests (once a `test/` folder exists), then a
 debug APK, a web build and a Linux desktop bundle, each uploaded as a workflow
 artifact.
+
+## GitHub Pages
+
+`.github/workflows/pages.yml` builds the web app and publishes it to
+`https://calemccammon.github.io/flutter-weather/`. It runs only when started by hand
+from the Actions tab. On the free plan Pages needs a public repository, so it
+will fail until this one is public.
