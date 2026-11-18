@@ -55,3 +55,44 @@ jobs:
           name: flutter-weather-debug-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
           retention-days: 14
+
+  build-web:
+    name: Build web
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.50.0
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter build web
+      - uses: actions/upload-artifact@v7
+        with:
+          name: flutter-weather-web
+          path: build/web
+          retention-days: 14
+
+  build-linux:
+    name: Build Linux desktop
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - run: sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.50.0
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter build linux --release
+      - uses: actions/upload-artifact@v7
+        with:
+          name: flutter-weather-linux-x64
+          path: build/linux/x64/release/bundle
+          retention-days: 14

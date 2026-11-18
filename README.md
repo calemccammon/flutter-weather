@@ -35,11 +35,13 @@ Any of these can be swapped; nothing depends on them yet.
 
 ## Running
 
-Flutter 3.50.0 (stable). Targets: Android, iOS, web.
+Flutter 3.50.0 (stable). Targets: Android, Linux desktop, web, iOS.
 
 ```sh
 flutter pub get
 flutter run            # pick the emulator or a connected phone
+flutter run -d linux   # desktop window
+flutter run -d chrome  # web; needs CHROME_EXECUTABLE set to a Chromium browser
 flutter analyze
 flutter test
 ```
@@ -47,8 +49,12 @@ flutter test
 Start the emulator first with `emulator -avd Pixel_API_36`, or from Android
 Studio's Device Manager. iOS builds need a Mac.
 
+`maplibre_gl` covers Android, iOS and web but not Linux desktop, so the map
+needs a fallback there (see the map issues).
+
 ## CI
 
 `.github/workflows/ci.yml` runs on pushes to `main` and on pull requests:
 format check, `flutter analyze`, tests (once a `test/` folder exists), then a
-debug APK uploaded as a workflow artifact.
+debug APK, a web build and a Linux desktop bundle, each uploaded as a workflow
+artifact.
