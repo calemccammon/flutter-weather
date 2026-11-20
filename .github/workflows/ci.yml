@@ -29,9 +29,7 @@ jobs:
       - run: dart format --output=none --set-exit-if-changed .
       # Fails on any finding, infos included. Rules are in analysis_options.yaml.
       - run: flutter analyze
-      # `flutter test` fails when there is no test folder yet.
-      - name: Test
-        run: if [ -d test ]; then flutter test; else echo "No tests yet"; fi
+      - run: flutter test
 
   build-android:
     name: Build Android APK

@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The template grants this to debug builds only; release builds need it
+         here to reach the weather service and the map tiles. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="flutter_weather"
+        android:label="Weather"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
