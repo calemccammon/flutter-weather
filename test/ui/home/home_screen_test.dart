@@ -63,6 +63,16 @@ Future<void> searchFor(WidgetTester tester, String text) async {
 final hint = find.textContaining('Search for a place, or press');
 final inSearchBar = find.byType(SearchBar);
 
+/// The live region around [what]: what a screen reader reads out, unasked,
+/// when it appears or changes.
+Finder announcing(Finder what) => find.ancestor(
+  of: what,
+  matching: find.byWidgetPredicate(
+    (widget) => widget is Semantics && (widget.properties.liveRegion ?? false),
+    description: 'a live region',
+  ),
+);
+
 void main() {
   testWidgets('starts with a hint and no forecast', (tester) async {
     await pumpApp(tester);
@@ -101,6 +111,7 @@ void main() {
       await searchFor(tester, 'zzzz');
 
       expect(find.text('Nothing found for "zzzz"'), findsOneWidget);
+      expect(announcing(find.text('Nothing found for "zzzz"')), findsOneWidget);
     });
 
     testWidgets('a failure offers another try, which works', (tester) async {
@@ -140,6 +151,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text(en.failureTimeout), findsOneWidget);
+      expect(announcing(find.text(en.failureTimeout)), findsOneWidget);
       expect(find.text('This week'), findsNothing);
 
       // The second answer is held back, as on a slow connection.
@@ -149,7 +161,12 @@ void main() {
       await tester.tap(find.text('Try again'));
       await tester.pump();
 
-      expect(find.byType(LinearProgressIndicator), findsOneWidget);
+      final progress = find.byType(LinearProgressIndicator);
+      expect(announcing(progress), findsOneWidget);
+      expect(
+        tester.widget<LinearProgressIndicator>(progress).semanticsLabel,
+        'Loading the forecast',
+      );
       expect(find.text(en.failureTimeout), findsNothing);
 
       repository.forecasts.single.complete(sampleForecast());
@@ -169,6 +186,18 @@ void main() {
       expect(hint, findsOneWidget);
       expect(find.text('This week'), findsNothing);
     });
+  });
+
+  testWidgets('everything that can be pressed is big enough to press', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpApp(tester, size: phone);
+    homeViewModel(tester).select(asheville);
+    await tester.pumpAndSettle();
+
+    await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+    handle.dispose();
   });
 
   testWidgets('choosing Celsius shows the forecast in Celsius and '

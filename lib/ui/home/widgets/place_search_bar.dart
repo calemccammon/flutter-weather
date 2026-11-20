@@ -93,21 +93,28 @@ class _SearchResultsView extends ConsumerWidget {
     final l10n = context.l10n;
 
     return switch (state) {
-      SearchIdle() => _Message(Icons.travel_explore, l10n.searchPrompt),
-      SearchLoading() => const Align(
-        alignment: Alignment.topCenter,
-        child: LinearProgressIndicator(),
+      // What is happening is read out by a screen reader as it changes:
+      // searching, then what came of it.
+      SearchIdle() => _Status(
+        child: _Message(Icons.travel_explore, l10n.searchPrompt),
       ),
-      SearchEmpty(:final query) => _Message(
-        Icons.search_off,
-        l10n.searchNothingFound(query),
+      SearchLoading() => _Status(
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: LinearProgressIndicator(semanticsLabel: l10n.searchSearching),
+        ),
       ),
-      SearchFailed(:final message) => _Message(
-        Icons.cloud_off,
-        message,
-        action: TextButton(
-          onPressed: ref.read(searchViewModelProvider.notifier).retry,
-          child: Text(l10n.tryAgain),
+      SearchEmpty(:final query) => _Status(
+        child: _Message(Icons.search_off, l10n.searchNothingFound(query)),
+      ),
+      SearchFailed(:final message) => _Status(
+        child: _Message(
+          Icons.cloud_off,
+          message,
+          action: TextButton(
+            onPressed: ref.read(searchViewModelProvider.notifier).retry,
+            child: Text(l10n.tryAgain),
+          ),
         ),
       ),
       SearchResults(:final places) => ListView(
@@ -124,6 +131,17 @@ class _SearchResultsView extends ConsumerWidget {
       ),
     };
   }
+}
+
+/// Something a screen reader announces when it appears or changes.
+class _Status extends StatelessWidget {
+  const _Status({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) =>
+      Semantics(container: true, liveRegion: true, child: child);
 }
 
 class _Message extends StatelessWidget {

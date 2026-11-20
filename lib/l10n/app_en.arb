@@ -124,6 +124,14 @@
       }
     }
   },
+  "forecastLoading": "Loading the forecast",
+  "@forecastLoading": {
+    "description": "Screen-reader name of the progress bar shown while a forecast is on its way."
+  },
+  "searchSearching": "Searching",
+  "@searchSearching": {
+    "description": "Screen-reader name of the progress bar shown while a search is on its way."
+  },
   "today": "Today",
   "@today": {
     "description": "Label of the current day's row in the daily forecast."
