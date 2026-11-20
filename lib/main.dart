@@ -1,17 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const ProviderScope(child: MainApp()));
-}
+import 'app.dart';
+import 'di/providers.dart';
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Weekday names for the forecast, in whichever language the app is using.
+  await initializeDateFormatting();
+  final preferences = await SharedPreferences.getInstance();
 
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(body: Center(child: Text('Hello World!'))),
-    );
-  }
+  runApp(
+    ProviderScope(
+      overrides: [sharedPreferencesProvider.overrideWithValue(preferences)],
+      child: const WeatherApp(),
+    ),
+  );
 }

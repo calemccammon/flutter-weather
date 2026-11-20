@@ -1,0 +1,312 @@
+{
+  "@@locale": "en",
+  "appTitle": "Weather",
+  "@appTitle": {
+    "description": "The app's name, as shown by the task switcher and the browser tab."
+  },
+  "searchHint": "Search for a place",
+  "@searchHint": {
+    "description": "Hint inside the empty search bar."
+  },
+  "searchPrompt": "Type a city, town or postcode",
+  "@searchPrompt": {
+    "description": "Shown in the open search view before anything is typed."
+  },
+  "searchNothingFound": "Nothing found for \"{query}\"",
+  "@searchNothingFound": {
+    "description": "Shown when a search has no results.",
+    "placeholders": {
+      "query": {
+        "type": "String",
+        "example": "Ashevile"
+      }
+    }
+  },
+  "clearPlace": "Clear place",
+  "@clearPlace": {
+    "description": "Tooltip of the button that deselects the current place."
+  },
+  "tryAgain": "Try again",
+  "@tryAgain": {
+    "description": "Button that repeats a request that failed."
+  },
+  "forecastHint": "Search for a place, or press and hold on the map, to see its forecast.",
+  "@forecastHint": {
+    "description": "Shown in the forecast area while no place is selected."
+  },
+  "forecastThisWeek": "This week",
+  "@forecastThisWeek": {
+    "description": "Heading above the daily forecast."
+  },
+  "unitsCelsius": "°C",
+  "@unitsCelsius": {
+    "description": "Label of the choice to show temperatures in Celsius."
+  },
+  "unitsFahrenheit": "°F",
+  "@unitsFahrenheit": {
+    "description": "Label of the choice to show temperatures in Fahrenheit."
+  },
+  "unitsCelsiusName": "Celsius and km/h",
+  "@unitsCelsiusName": {
+    "description": "Tooltip of the Celsius choice."
+  },
+  "unitsFahrenheitName": "Fahrenheit and mph",
+  "@unitsFahrenheitName": {
+    "description": "Tooltip of the Fahrenheit choice."
+  },
+  "forecastNoDays": "No forecast for the coming days.",
+  "@forecastNoDays": {
+    "description": "Shown instead of the daily forecast when the service sent no days."
+  },
+  "forecastCredit": "Weather data by Open-Meteo.com",
+  "@forecastCredit": {
+    "description": "Credit the weather service asks for."
+  },
+  "mapCredit": "© OpenStreetMap contributors",
+  "@mapCredit": {
+    "description": "Credit the map's makers ask for."
+  },
+  "selectedPlace": "Selected place",
+  "@selectedPlace": {
+    "description": "Screen-reader name of the pin on the map."
+  },
+  "today": "Today",
+  "@today": {
+    "description": "Label of the current day's row in the daily forecast."
+  },
+  "temperature": "{degrees}°",
+  "@temperature": {
+    "description": "A temperature without its scale, as in a forecast row.",
+    "placeholders": {
+      "degrees": {
+        "type": "int"
+      }
+    }
+  },
+  "temperatureCelsius": "{degrees}°C",
+  "@temperatureCelsius": {
+    "description": "The current temperature in Celsius.",
+    "placeholders": {
+      "degrees": {
+        "type": "int"
+      }
+    }
+  },
+  "temperatureFahrenheit": "{degrees}°F",
+  "@temperatureFahrenheit": {
+    "description": "The current temperature in Fahrenheit.",
+    "placeholders": {
+      "degrees": {
+        "type": "int"
+      }
+    }
+  },
+  "feelsLike": "Feels like {degrees}°",
+  "@feelsLike": {
+    "description": "The apparent temperature.",
+    "placeholders": {
+      "degrees": {
+        "type": "int"
+      }
+    }
+  },
+  "wind": "Wind {speed}",
+  "@wind": {
+    "description": "The wind speed line. {speed} is speedKmh or speedMph.",
+    "placeholders": {
+      "speed": {
+        "type": "String",
+        "example": "4 mph"
+      }
+    }
+  },
+  "speedKmh": "{speed} km/h",
+  "@speedKmh": {
+    "description": "A speed in kilometres per hour.",
+    "placeholders": {
+      "speed": {
+        "type": "int"
+      }
+    }
+  },
+  "speedMph": "{speed} mph",
+  "@speedMph": {
+    "description": "A speed in miles per hour.",
+    "placeholders": {
+      "speed": {
+        "type": "int"
+      }
+    }
+  },
+  "precipitationChance": "{percent}%",
+  "@precipitationChance": {
+    "description": "Chance of rain or snow in a forecast row.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "spokenCelsius": "{degrees} degrees Celsius",
+  "@spokenCelsius": {
+    "description": "A Celsius temperature as a screen reader should say it.",
+    "placeholders": {
+      "degrees": {
+        "type": "int"
+      }
+    }
+  },
+  "spokenFahrenheit": "{degrees} degrees Fahrenheit",
+  "@spokenFahrenheit": {
+    "description": "A Fahrenheit temperature as a screen reader should say it.",
+    "placeholders": {
+      "degrees": {
+        "type": "int"
+      }
+    }
+  },
+  "currentSemantics": "Now: {condition}, {temperature}, feels like {feelsLike}, wind {wind}",
+  "@currentSemantics": {
+    "description": "The current conditions as one sentence for a screen reader. {temperature} is spokenCelsius or spokenFahrenheit; {wind} is speedKmh or speedMph.",
+    "placeholders": {
+      "condition": {
+        "type": "String",
+        "example": "Overcast"
+      },
+      "temperature": {
+        "type": "String",
+        "example": "36 degrees Fahrenheit"
+      },
+      "feelsLike": {
+        "type": "int"
+      },
+      "wind": {
+        "type": "String",
+        "example": "4 mph"
+      }
+    }
+  },
+  "daySemantics": "{day}: {condition}, low {low}, high {high} degrees",
+  "@daySemantics": {
+    "description": "One day of the forecast as a sentence for a screen reader.",
+    "placeholders": {
+      "day": {
+        "type": "String",
+        "example": "Saturday"
+      },
+      "condition": {
+        "type": "String",
+        "example": "Rain"
+      },
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      }
+    }
+  },
+  "daySemanticsWithChance": "{day}: {condition}, low {low}, high {high} degrees, {percent} percent chance of precipitation",
+  "@daySemanticsWithChance": {
+    "description": "One day of the forecast, with its chance of rain or snow, as a sentence for a screen reader.",
+    "placeholders": {
+      "day": {
+        "type": "String",
+        "example": "Saturday"
+      },
+      "condition": {
+        "type": "String",
+        "example": "Rain"
+      },
+      "low": {
+        "type": "int"
+      },
+      "high": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "conditionClear": "Clear",
+  "@conditionClear": {
+    "description": "Name of a weather condition."
+  },
+  "conditionMostlyClear": "Mostly clear",
+  "@conditionMostlyClear": {
+    "description": "Name of a weather condition."
+  },
+  "conditionPartlyCloudy": "Partly cloudy",
+  "@conditionPartlyCloudy": {
+    "description": "Name of a weather condition."
+  },
+  "conditionOvercast": "Overcast",
+  "@conditionOvercast": {
+    "description": "Name of a weather condition."
+  },
+  "conditionFog": "Fog",
+  "@conditionFog": {
+    "description": "Name of a weather condition."
+  },
+  "conditionDrizzle": "Drizzle",
+  "@conditionDrizzle": {
+    "description": "Name of a weather condition."
+  },
+  "conditionFreezingDrizzle": "Freezing drizzle",
+  "@conditionFreezingDrizzle": {
+    "description": "Name of a weather condition."
+  },
+  "conditionRain": "Rain",
+  "@conditionRain": {
+    "description": "Name of a weather condition."
+  },
+  "conditionFreezingRain": "Freezing rain",
+  "@conditionFreezingRain": {
+    "description": "Name of a weather condition."
+  },
+  "conditionSnow": "Snow",
+  "@conditionSnow": {
+    "description": "Name of a weather condition."
+  },
+  "conditionRainShowers": "Rain showers",
+  "@conditionRainShowers": {
+    "description": "Name of a weather condition."
+  },
+  "conditionSnowShowers": "Snow showers",
+  "@conditionSnowShowers": {
+    "description": "Name of a weather condition."
+  },
+  "conditionThunderstorm": "Thunderstorm",
+  "@conditionThunderstorm": {
+    "description": "Name of a weather condition."
+  },
+  "conditionUnknown": "Unknown",
+  "@conditionUnknown": {
+    "description": "Name of a weather condition."
+  },
+  "failureTimeout": "The weather service took too long to answer.",
+  "@failureTimeout": {
+    "description": "Error: the request timed out."
+  },
+  "failureNoConnection": "Could not reach the weather service. Check your connection.",
+  "@failureNoConnection": {
+    "description": "Error: no network, or the service is down."
+  },
+  "failureBadResponse": "The weather service sent an answer this app could not read.",
+  "@failureBadResponse": {
+    "description": "Error: the response was not in the expected shape."
+  },
+  "failureRejected": "The weather service refused the request.",
+  "@failureRejected": {
+    "description": "Error: the service answered with an error."
+  },
+  "failureInvalidPlace": "That point is not on the map.",
+  "@failureInvalidPlace": {
+    "description": "Error: the chosen coordinates are off the globe."
+  },
+  "failureUnexpected": "Something went wrong. Please try again.",
+  "@failureUnexpected": {
+    "description": "Error: anything not covered by the other messages."
+  }
+}
