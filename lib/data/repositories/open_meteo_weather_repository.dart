@@ -92,6 +92,11 @@ class OpenMeteoWeatherRepository implements WeatherRepository {
     }
   }
 
+  /// HTTP statuses this repository tells apart.
+  static const _ok = 200;
+  static const _tooManyRequests = 429;
+  static const _firstServerError = 500;
+
   Future<Map<String, dynamic>> _get(Uri uri) async {
     final http.Response response;
     try {
@@ -103,18 +108,30 @@ class OpenMeteoWeatherRepository implements WeatherRepository {
       throw WeatherException(WeatherFailure.noConnection, detail: '$e');
     }
 
-    final Map<String, dynamic> body;
+    final status = response.statusCode;
+    // The service's own trouble, or too many requests: its answer, often a
+    // proxy's error page, is not read at all.
+    if (status >= _firstServerError || status == _tooManyRequests) {
+      throw WeatherException(
+        WeatherFailure.unavailable,
+        detail: 'HTTP $status',
+      );
+    }
+
+    Map<String, dynamic>? body;
     try {
       body = readObject(jsonDecode(response.body), 'response');
     } on FormatException catch (e) {
-      throw WeatherException(WeatherFailure.badResponse, detail: e.message);
+      if (status == _ok) {
+        throw WeatherException(WeatherFailure.badResponse, detail: e.message);
+      }
     }
     // Bad input comes back as HTTP 400 with {"error": true, "reason": "..."}.
-    if (response.statusCode != 200 || body['error'] == true) {
-      final reason = body['reason'];
+    if (status != _ok || body == null || body['error'] == true) {
+      final reason = body?['reason'];
       throw WeatherException(
         WeatherFailure.rejected,
-        detail: reason is String ? reason : 'HTTP ${response.statusCode}',
+        detail: reason is String ? reason : 'HTTP $status',
       );
     }
     return body;

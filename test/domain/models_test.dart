@@ -6,9 +6,11 @@ import '../support/fakes.dart';
 
 void main() {
   group('Place', () {
-    test('a point picked on the map is named by its coordinates', () {
-      expect(Place.fromCoordinates(35.6, -82.554).name, '35.60°N, 82.55°W');
-      expect(Place.fromCoordinates(-33.87, 151.21).name, '33.87°S, 151.21°E');
+    test('a point picked on the map has no name', () {
+      expect(
+        Place.fromCoordinates(35.6, -82.55),
+        const Place(latitude: 35.6, longitude: -82.55),
+      );
     });
 
     test('a point from a map dragged round the world keeps a real '
@@ -16,7 +18,6 @@ void main() {
       final place = Place.fromCoordinates(35.6, -82.55 + 360);
 
       expect(place.longitude, closeTo(-82.55, 1e-9));
-      expect(place.name, '35.60°N, 82.55°W');
       expect(Place.normalizeLongitude(180), -180);
       expect(Place.normalizeLongitude(-180), -180);
       expect(Place.normalizeLongitude(0), 0);

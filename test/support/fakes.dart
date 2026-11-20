@@ -70,7 +70,12 @@ DailyForecast day(
 /// has been set with [placesToReturn] or [forecastToReturn].
 class FakeWeatherRepository implements WeatherRepository {
   final searchQueries = <String>[];
+
+  /// The newest unanswered search for each query.
   final searches = <String, Completer<List<Place>>>{};
+
+  /// Every unanswered search, in the order they were sent.
+  final searchCalls = <Completer<List<Place>>>[];
   final forecasts = <Completer<Forecast>>[];
   final forecastRequests = <(double, double, Units)>[];
 
@@ -88,7 +93,10 @@ class FakeWeatherRepository implements WeatherRepository {
     searchQueries.add(query);
     if (failure case final failure?) return Future.error(failure);
     if (placesToReturn case final places?) return Future.value(places);
-    return (searches[query] = Completer<List<Place>>()).future;
+    final completer = Completer<List<Place>>();
+    searches[query] = completer;
+    searchCalls.add(completer);
+    return completer.future;
   }
 
   @override

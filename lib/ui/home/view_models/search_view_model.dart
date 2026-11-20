@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../di/providers.dart';
 import '../../../domain/models/place.dart';
 import '../../../domain/use_cases/search_places.dart';
+import '../../core/dependencies.dart';
 import '../../core/failure_messages.dart';
 import '../../core/l10n.dart';
 import '../models/place_ui_model.dart';
@@ -14,16 +14,19 @@ import 'home_view_model.dart';
 /// Turns what the user types into search results.
 ///
 /// It waits for a pause in typing before searching, and an answer that comes
-/// back after the text has changed again is thrown away.
+/// back after a newer search has been sent is thrown away.
 class SearchViewModel extends Notifier<SearchState> {
   /// How long typing must pause before a search is sent.
   static const debounce = Duration(milliseconds: 350);
 
   Timer? _debounce;
 
-  /// The text of the newest request, so an older, slower one can tell it has
-  /// been overtaken.
+  /// The text last asked about; what [retry] asks about again.
   String _latestQuery = '';
+
+  /// Counts changes of the query, so an answer can tell whether it is still
+  /// wanted. The text alone cannot: the same text can be searched for twice.
+  int _request = 0;
 
   /// The places behind the rows of the current [SearchResults], in order.
   List<Place> _results = const [];
@@ -49,6 +52,7 @@ class SearchViewModel extends Notifier<SearchState> {
     final query = text.trim();
     if (query == _latestQuery) return;
     _latestQuery = query;
+    _request++;
     _debounce?.cancel();
 
     if (!SearchPlaces.isSearchable(query)) {
@@ -63,6 +67,7 @@ class SearchViewModel extends Notifier<SearchState> {
   void reset() {
     _debounce?.cancel();
     _latestQuery = '';
+    _request++;
     _results = const [];
     state = const SearchIdle();
   }
@@ -80,11 +85,14 @@ class SearchViewModel extends Notifier<SearchState> {
     final query = _latestQuery;
     if (!SearchPlaces.isSearchable(query)) return;
     _debounce?.cancel();
+    _request++;
     state = SearchLoading(query);
     unawaited(_search(query));
   }
 
   Future<void> _search(String query) async {
+    final request = _request;
+    final l10n = ref.read(appLocalizationsProvider);
     SearchState result;
     var places = const <Place>[];
     Exception? error;
@@ -93,16 +101,13 @@ class SearchViewModel extends Notifier<SearchState> {
       result = places.isEmpty
           ? SearchEmpty(query)
           : SearchResults(query, [
-              for (final place in places) PlaceUiModel.from(place),
+              for (final place in places) PlaceUiModel.from(place, l10n),
             ]);
     } on Exception catch (e) {
       error = e;
-      result = SearchFailed(
-        query,
-        messageForError(e, ref.read(appLocalizationsProvider)),
-      );
+      result = SearchFailed(query, messageForError(e, l10n));
     }
-    if (!ref.mounted || _latestQuery != query) return;
+    if (!ref.mounted || request != _request) return;
     _results = places;
     _error = error;
     state = result;

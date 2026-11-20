@@ -60,17 +60,25 @@ class ForecastPanel extends ConsumerWidget {
           SizedBox(height: spacing.lg),
         ],
         ...switch (state.forecast) {
-          ForecastIdle() => const [_Hint()],
+          // What is happening is read out by a screen reader as it changes:
+          // loading, then failed.
+          ForecastIdle() => const [_Status(child: _Hint())],
           ForecastLoading() => [
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: spacing.xl),
-              child: const LinearProgressIndicator(),
+            _Status(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: spacing.xl),
+                child: LinearProgressIndicator(
+                  semanticsLabel: context.l10n.forecastLoading,
+                ),
+              ),
             ),
           ],
           ForecastFailed(:final message) => [
-            _Failure(
-              message: message,
-              onRetry: ref.read(homeViewModelProvider.notifier).retryForecast,
+            _Status(
+              child: _Failure(
+                message: message,
+                onRetry: ref.read(homeViewModelProvider.notifier).retryForecast,
+              ),
             ),
           ],
           ForecastLoaded(:final forecast) => [
@@ -108,6 +116,17 @@ class ForecastPanel extends ConsumerWidget {
       ],
     );
   }
+}
+
+/// Something a screen reader announces when it appears or changes.
+class _Status extends StatelessWidget {
+  const _Status({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) =>
+      Semantics(container: true, liveRegion: true, child: child);
 }
 
 class _Hint extends StatelessWidget {

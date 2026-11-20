@@ -32,6 +32,9 @@ enum WeatherFailure {
   /// The service refused the request.
   rejected,
 
+  /// The service is in trouble or too busy; trying later may work.
+  unavailable,
+
   /// The place asked about is not a point on the globe.
   invalidPlace,
 }

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../../di/providers.dart';
+import '../../core/dependencies.dart';
 import '../../core/l10n.dart';
 import '../view_models/home_view_model.dart';
 

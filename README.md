@@ -17,7 +17,7 @@ to compare the frameworks.
 ## What it does
 
 - **Search** with results as you type, after a short pause; an answer to an
-  older query never replaces a newer one.
+  older search never replaces a newer one.
 - **Pick a point** by pressing and holding on the map.
 - **Forecast**: current conditions, then seven days with the chance of
   precipitation and each day's range drawn against the week's.
@@ -34,7 +34,8 @@ to compare the frameworks.
 ## Architecture
 
 Clean Architecture in three layers. Dependencies point inward only: `data`
-and `ui` import `domain`, and `domain` imports neither.
+and `ui` import `domain`, and `domain` imports neither. `flutter test` fails
+on an import that breaks this (`test/architecture_test.dart`).
 
 | Path | What it holds |
 | --- | --- |
@@ -42,7 +43,7 @@ and `ui` import `domain`, and `domain` imports neither.
 | `lib/data` | Open-Meteo: the wire-shaped models (`*_dto.dart`), their translation into domain types, and the repository implementation. Settings are kept with `shared_preferences`. |
 | `lib/l10n` | Every string the user sees, in `app_en.arb` (Flutter's counterpart to Android's `strings.xml`). `flutter gen-l10n` turns it into the typed `AppLocalizations` class on `flutter pub get` and on each build. |
 | `lib/ui` | `core` has the theme, its design tokens and the mapping from domain values to wording and icons. `home` has `models` (what the screen shows, already worded and rounded), `view_models` (call use cases and produce those models) and `widgets` (draw them, and import nothing from the domain). |
-| `lib/di` | The one file that says which implementation stands behind each domain interface. |
+| `lib/di` | The one file that says which implementation stands behind each domain interface, and builds the use cases the UI asks for by name in `lib/ui/core/dependencies.dart`. Nothing imports it but `main.dart`. |
 | `test` | Mirrors `lib`, with shared fakes in `test/support`. |
 
 Each layer has its own model of the same thing, and a translation between
@@ -102,8 +103,7 @@ by hand from the Actions tab, and needs the repository to be public.
   A published build needs a tile provider of its own.
 - **English only.** The wording is all in `lib/l10n/app_en.arb` and weekday
   names follow the app's language, so a second language is one more `.arb`
-  file; none has been written. A point picked off the map is still named in
-  one notation ("35.60°N, 82.55°W").
+  file; none has been written.
 - **Places are not saved**: the chosen place is forgotten when the app
   closes. Only the choice of units is kept.
 

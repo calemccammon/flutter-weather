@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../di/providers.dart';
 import '../../../domain/models/forecast.dart';
 import '../../../domain/models/place.dart';
 import '../../../domain/models/units.dart';
+import '../../core/dependencies.dart';
 import '../../core/failure_messages.dart';
 import '../../core/l10n.dart';
 import '../models/forecast_ui_model.dart';
@@ -117,7 +117,7 @@ class HomeViewModel extends Notifier<HomeState> {
     final l10n = ref.read(appLocalizationsProvider);
     state = HomeState(
       units: units,
-      place: PlaceUiModel.from(place),
+      place: PlaceUiModel.from(place, l10n),
       forecast: switch (_outcome) {
         null => const ForecastLoading(),
         _Loaded(:final forecast, :final units) => ForecastLoaded(
