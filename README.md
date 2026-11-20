@@ -106,3 +106,16 @@ by hand from the Actions tab, and needs the repository to be public.
   one notation ("35.60°N, 82.55°W").
 - **Places are not saved**: the chosen place is forgotten when the app
   closes. Only the choice of units is kept.
+
+## Not built
+
+Ideas that were considered and left out, roughly in the order they would be
+worth doing:
+
+- **Saved places** shown when the app opens.
+- **Forecast for the current location**, which needs the location permission
+  on each platform.
+- **A second language**, to exercise the localisation set-up.
+- **Rain radar** as a layer over the map.
+- **A signed release build** from CI, and a published web build once the
+  repository is public.
