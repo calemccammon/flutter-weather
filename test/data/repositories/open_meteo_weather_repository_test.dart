@@ -73,9 +73,10 @@ void main() {
       expect(asked?.queryParameters['name'], 'ashev');
       expect(places, hasLength(2));
       expect(places.first.name, 'Asheville');
-      expect(places.first.subtitle, 'North Carolina, United States');
+      expect(places.first.region, 'North Carolina');
+      expect(places.first.country, 'United States');
       expect(places.first.longitude, -82.55402);
-      expect(places.last.subtitle, isEmpty);
+      expect((places.last.region, places.last.country), (null, null));
       expect(places.last.latitude, 1.0);
     });
 
@@ -166,6 +167,46 @@ void main() {
               .having((e) => e.detail, 'detail', contains('Latitude must be')),
         ),
       );
+    });
+
+    test('an error status with no reason to read is still a refusal', () async {
+      for (final Object body in [
+        <String, Object>{},
+        '<html>Not found</html>',
+      ]) {
+        await expectLater(
+          repositoryAnswering(body, status: 404).searchPlaces('ash'),
+          throwsA(
+            isA<WeatherException>()
+                .having((e) => e.failure, 'failure', WeatherFailure.rejected)
+                .having((e) => e.detail, 'detail', 'HTTP 404'),
+          ),
+          reason: '$body',
+        );
+      }
+    });
+
+    test("a server error or a full queue is the service's own trouble, "
+        'whatever its body says', () async {
+      const answers = <(int, Object)>[
+        (503, '<html>Service unavailable</html>'),
+        (502, {'error': true, 'reason': 'Upstream failed.'}),
+        (429, {'error': true, 'reason': 'Minutely limit exceeded.'}),
+      ];
+      for (final (status, body) in answers) {
+        await expectLater(
+          repositoryAnswering(
+            body,
+            status: status,
+          ).forecast(latitude: 1, longitude: 2, units: Units.metric),
+          throwsA(
+            isA<WeatherException>()
+                .having((e) => e.failure, 'failure', WeatherFailure.unavailable)
+                .having((e) => e.detail, 'detail', 'HTTP $status'),
+          ),
+          reason: '$status',
+        );
+      }
     });
 
     test('a body of the wrong shape is a bad response', () async {

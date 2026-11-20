@@ -5,6 +5,7 @@ import 'package:flutter_weather/app.dart';
 import 'package:flutter_weather/di/providers.dart';
 import 'package:flutter_weather/domain/models/units.dart';
 import 'package:flutter_weather/domain/repositories/weather_repository.dart';
+import 'package:flutter_weather/ui/core/dependencies.dart';
 import 'package:flutter_weather/ui/home/view_models/home_view_model.dart';
 import 'package:flutter_weather/ui/home/view_models/search_view_model.dart';
 import 'package:latlong2/latlong.dart';
@@ -35,6 +36,7 @@ Future<FakeWeatherRepository> pumpApp(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        ...dependencies,
         weatherRepositoryProvider.overrideWithValue(repository),
         mapTileUrlProvider.overrideWithValue(null),
         settingsRepositoryProvider.overrideWithValue(settings),

@@ -70,6 +70,60 @@
   "@selectedPlace": {
     "description": "Screen-reader name of the pin on the map."
   },
+  "placeCoordinates": "{latitude}, {longitude}",
+  "@placeCoordinates": {
+    "description": "What a place with no name is called, as a point picked off the map. {latitude} is placeNorth or placeSouth, {longitude} is placeEast or placeWest.",
+    "placeholders": {
+      "latitude": {
+        "type": "String",
+        "example": "35.60°N"
+      },
+      "longitude": {
+        "type": "String",
+        "example": "82.55°W"
+      }
+    }
+  },
+  "placeNorth": "{degrees}°N",
+  "@placeNorth": {
+    "description": "A latitude north of the equator.",
+    "placeholders": {
+      "degrees": {
+        "type": "String",
+        "example": "35.60"
+      }
+    }
+  },
+  "placeSouth": "{degrees}°S",
+  "@placeSouth": {
+    "description": "A latitude south of the equator.",
+    "placeholders": {
+      "degrees": {
+        "type": "String",
+        "example": "33.87"
+      }
+    }
+  },
+  "placeEast": "{degrees}°E",
+  "@placeEast": {
+    "description": "A longitude east of Greenwich.",
+    "placeholders": {
+      "degrees": {
+        "type": "String",
+        "example": "151.21"
+      }
+    }
+  },
+  "placeWest": "{degrees}°W",
+  "@placeWest": {
+    "description": "A longitude west of Greenwich.",
+    "placeholders": {
+      "degrees": {
+        "type": "String",
+        "example": "82.55"
+      }
+    }
+  },
   "today": "Today",
   "@today": {
     "description": "Label of the current day's row in the daily forecast."
@@ -300,6 +354,10 @@
   "failureRejected": "The weather service refused the request.",
   "@failureRejected": {
     "description": "Error: the service answered with an error."
+  },
+  "failureUnavailable": "The weather service is having trouble. Try again in a moment.",
+  "@failureUnavailable": {
+    "description": "Error: the service answered with a server error, or said it is too busy."
   },
   "failureInvalidPlace": "That point is not on the map.",
   "@failureInvalidPlace": {

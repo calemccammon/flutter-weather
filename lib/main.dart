@@ -14,7 +14,10 @@ Future<void> main() async {
 
   runApp(
     ProviderScope(
-      overrides: [sharedPreferencesProvider.overrideWithValue(preferences)],
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(preferences),
+        ...dependencies,
+      ],
       child: const WeatherApp(),
     ),
   );

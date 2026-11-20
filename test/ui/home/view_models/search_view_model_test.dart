@@ -33,6 +33,7 @@ void main() {
     repository = FakeWeatherRepository();
     container = ProviderContainer.test(
       overrides: [
+        ...dependencies,
         weatherRepositoryProvider.overrideWithValue(repository),
         settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
         appLocalizationsProvider.overrideWith((ref) => ref.watch(wording)),
@@ -67,7 +68,7 @@ void main() {
         isA<SearchResults>().having((s) => s.query, 'query', 'ashe').having(
           (s) => s.places,
           'places',
-          [PlaceUiModel.from(asheville)],
+          [PlaceUiModel.from(asheville, en)],
         ),
       );
     });
@@ -87,14 +88,14 @@ void main() {
       expect(
         state(),
         isA<SearchResults>().having((s) => s.places, 'places', [
-          PlaceUiModel.from(ashford),
+          PlaceUiModel.from(ashford, en),
         ]),
       );
       // And the row still leads to the newer answer's place.
       viewModel().choose(0);
       expect(
         container.read(homeViewModelProvider).place,
-        PlaceUiModel.from(ashford),
+        PlaceUiModel.from(ashford, en),
       );
     });
   });
@@ -165,7 +166,33 @@ void main() {
       viewModel().choose(1);
       expect(
         container.read(homeViewModelProvider).place,
-        PlaceUiModel.from(ashford),
+        PlaceUiModel.from(ashford, en),
+      );
+    });
+  });
+
+  test('an old answer for text that has since been typed again is ignored', () {
+    fakeAsync((async) {
+      search(async, 'ash');
+      search(async, 'ashe');
+      search(async, 'ash');
+      final [first, _, second] = repository.searchCalls;
+
+      second.complete([asheville]);
+      async.flushMicrotasks();
+      first.completeError(const WeatherException(WeatherFailure.timeout));
+      async.flushMicrotasks();
+
+      expect(
+        state(),
+        isA<SearchResults>().having((s) => s.places, 'places', [
+          PlaceUiModel.from(asheville, en),
+        ]),
+      );
+      viewModel().choose(0);
+      expect(
+        container.read(homeViewModelProvider).place,
+        PlaceUiModel.from(asheville, en),
       );
     });
   });

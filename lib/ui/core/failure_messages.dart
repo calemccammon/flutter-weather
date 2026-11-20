@@ -8,6 +8,7 @@ extension WeatherFailureMessage on WeatherFailure {
     WeatherFailure.noConnection => l10n.failureNoConnection,
     WeatherFailure.badResponse => l10n.failureBadResponse,
     WeatherFailure.rejected => l10n.failureRejected,
+    WeatherFailure.unavailable => l10n.failureUnavailable,
     WeatherFailure.invalidPlace => l10n.failureInvalidPlace,
   };
 }

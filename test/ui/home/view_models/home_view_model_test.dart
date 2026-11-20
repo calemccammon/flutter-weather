@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_weather/di/providers.dart';
 import 'package:flutter_weather/domain/models/units.dart';
 import 'package:flutter_weather/domain/repositories/weather_repository.dart';
+import 'package:flutter_weather/ui/core/dependencies.dart';
 import 'package:flutter_weather/ui/core/l10n.dart';
 import 'package:flutter_weather/ui/home/models/home_state.dart';
 import 'package:flutter_weather/ui/home/models/place_ui_model.dart';
@@ -32,6 +33,7 @@ Future<void> main() async {
     settings = FakeSettingsRepository(Units.imperial);
     container = ProviderContainer.test(
       overrides: [
+        ...dependencies,
         weatherRepositoryProvider.overrideWithValue(repository),
         appLocalizationsProvider.overrideWith((ref) => ref.watch(wording)),
         settingsRepositoryProvider.overrideWithValue(settings),
@@ -48,7 +50,7 @@ Future<void> main() async {
   test('selecting a place shows it at once, then its forecast', () async {
     viewModel().select(asheville);
 
-    expect(state().place, PlaceUiModel.from(asheville));
+    expect(state().place, PlaceUiModel.from(asheville, en));
     expect(state().forecast, isA<ForecastLoading>());
     expect(repository.forecastRequests, [(35.6, -82.55, Units.imperial)]);
 
@@ -91,7 +93,7 @@ Future<void> main() async {
 
     viewModel().retryForecast();
     expect(state().forecast, isA<ForecastLoading>());
-    expect(state().place, PlaceUiModel.from(asheville));
+    expect(state().place, PlaceUiModel.from(asheville, en));
 
     repository.forecasts[1].complete(sampleForecast());
     await settle();
@@ -142,7 +144,7 @@ Future<void> main() async {
       );
       await settle();
 
-      expect(state().place, PlaceUiModel.from(ashford));
+      expect(state().place, PlaceUiModel.from(ashford, en));
       expect(state().forecast, isA<ForecastLoaded>());
     },
   );
