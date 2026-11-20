@@ -1,9 +1,10 @@
 # flutter-weather
 
-A weather app in Flutter: search for a place, see its forecast. One of three
+A weather app in Flutter: search for a place, see its forecast. One of four
 builds of the same app, alongside
-[kmp-weather](https://github.com/calemccammon/kmp-weather) and
-[react-native-weather](https://github.com/calemccammon/react-native-weather),
+[kmp-weather](https://github.com/calemccammon/kmp-weather),
+[react-native-weather](https://github.com/calemccammon/react-native-weather) and
+[maui-weather](https://github.com/calemccammon/maui-weather),
 to compare the frameworks.
 
 The repository holds the project set-up only. `lib/main.dart` is the
