@@ -29,7 +29,7 @@ Future<FakeWeatherRepository> pumpApp(
   addTearDown(tester.view.reset);
   addTearDown(tester.platformDispatcher.clearAllTestValues);
 
-  final settings = FakeSettingsRepository(Units.imperial);
+  final settings = FakeSettingsRepository(Units.metric);
   final repository = FakeWeatherRepository()
     ..placesToReturn = const [asheville]
     ..forecastToReturn = sampleForecast();
@@ -93,9 +93,9 @@ void main() {
 
       expect(find.text('This week'), findsOneWidget);
       expect(find.text('Today'), findsOneWidget);
-      expect(find.text('36°F'), findsOneWidget);
+      expect(find.text('36°C'), findsOneWidget);
       expect(find.text('Feels like 31°'), findsOneWidget);
-      expect(find.text('Wind 4 mph'), findsOneWidget);
+      expect(find.text('Wind 4 km/h'), findsOneWidget);
       expect(find.text('80%'), findsOneWidget);
       expect(find.text('Weather data by Open-Meteo.com'), findsOneWidget);
       expect(
@@ -200,23 +200,26 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('choosing Celsius shows the forecast in Celsius and '
-      'remembers the choice', (tester) async {
+  testWidgets('choosing Fahrenheit converts the forecast on screen, without '
+      'asking again, and remembers the choice', (tester) async {
     final repository = await pumpApp(tester);
     homeViewModel(tester).select(asheville);
     await tester.pumpAndSettle();
-    expect(find.text('36°F'), findsOneWidget);
-
-    await tester.tap(find.text('°C'));
-    await tester.pumpAndSettle();
-
     expect(find.text('36°C'), findsOneWidget);
-    expect(find.text('Wind 4 km/h'), findsOneWidget);
-    expect(repository.forecastRequests.last.$3, Units.metric);
+
+    await tester.tap(find.text('°F'));
+    await tester.pump();
+
+    // 35.8 °C, feels like 31.3 °C, wind 4.4 km/h; no wait in between.
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    expect(find.text('96°F'), findsOneWidget);
+    expect(find.text('Feels like 88°'), findsOneWidget);
+    expect(find.text('Wind 3 mph'), findsOneWidget);
+    expect(repository.forecastRequests, hasLength(1));
     final settings = ProviderScope.containerOf(
       tester.element(find.byType(WeatherApp)),
     ).read(settingsRepositoryProvider);
-    expect(settings.units, Units.metric);
+    expect(settings.units, Units.imperial);
   });
 
   group('map', () {
@@ -229,7 +232,7 @@ void main() {
       await tester.longPressAt(desktop.center(Offset.zero));
       await tester.pumpAndSettle();
 
-      final (latitude, longitude, _) = repository.forecastRequests.single;
+      final (latitude, longitude) = repository.forecastRequests.single;
       expect(latitude, closeTo(25, 1));
       expect(longitude, closeTo(0, 1));
       expect(find.text('This week'), findsOneWidget);
@@ -255,7 +258,7 @@ void main() {
         );
         // The scrolling area that holds the forecast, in either layout.
         final forecast = tester.getRect(
-          find.ancestor(of: find.text('36°F'), matching: find.byType(ListView)),
+          find.ancestor(of: find.text('36°C'), matching: find.byType(ListView)),
         );
 
         expect(camera.zoom, greaterThanOrEqualTo(10));
@@ -280,7 +283,7 @@ void main() {
         .camera
         .latLngToScreenOffset(LatLng(asheville.latitude, asheville.longitude));
     final sheet = tester.getRect(
-      find.ancestor(of: find.text('36°F'), matching: find.byType(ListView)),
+      find.ancestor(of: find.text('36°C'), matching: find.byType(ListView)),
     );
 
     expect(pin.dx, closeTo(phone.width / 2, 1));
@@ -298,7 +301,7 @@ void main() {
 
       final inSheet = find.byType(DraggableScrollableSheet);
       expect(
-        find.descendant(of: inSheet, matching: find.text('36°F')),
+        find.descendant(of: inSheet, matching: find.text('36°C')),
         findsOneWidget,
       );
       expect(

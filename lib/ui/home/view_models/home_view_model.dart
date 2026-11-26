@@ -57,17 +57,13 @@ class HomeViewModel extends Notifier<HomeState> {
   }
 
   /// Shows forecasts in [units] from now on, and remembers the choice. The
-  /// forecast on screen is asked for again in them.
+  /// forecast already held is converted on the device, not asked for again.
   void setUnits(UnitsUiModel units) {
     final chosen = units.toDomain();
     if (chosen == _units) return;
     _units = chosen;
     unawaited(_saveUnits(chosen));
-    if (_place == null) {
-      _show();
-    } else {
-      unawaited(_load());
-    }
+    _show();
   }
 
   Future<void> _saveUnits(Units units) async {
@@ -91,11 +87,9 @@ class HomeViewModel extends Notifier<HomeState> {
     _outcome = null;
     _show();
 
-    final units = _units;
     _Outcome outcome;
     try {
-      final forecast = await ref.read(getForecastProvider)(place, units);
-      outcome = _Loaded(forecast, units);
+      outcome = _Loaded(await ref.read(getForecastProvider)(place));
     } on Exception catch (e) {
       outcome = _Failed(e);
     }
@@ -109,19 +103,19 @@ class HomeViewModel extends Notifier<HomeState> {
   /// current wording.
   void _show() {
     final place = _place;
-    final units = UnitsUiModel.from(_units);
+    final units = _units;
     if (place == null) {
-      state = HomeState(units: units);
+      state = HomeState(units: UnitsUiModel.from(units));
       return;
     }
     final l10n = ref.read(appLocalizationsProvider);
     state = HomeState(
-      units: units,
+      units: UnitsUiModel.from(units),
       place: PlaceUiModel.from(place, l10n),
       forecast: switch (_outcome) {
         null => const ForecastLoading(),
-        _Loaded(:final forecast, :final units) => ForecastLoaded(
-          ForecastUiModel.from(forecast, units, l10n),
+        _Loaded(:final forecast) => ForecastLoaded(
+          ForecastUiModel.from(forecast.inUnits(units), units, l10n),
         ),
         _Failed(:final error) => ForecastFailed(messageForError(error, l10n)),
       },
@@ -132,9 +126,10 @@ class HomeViewModel extends Notifier<HomeState> {
 sealed class _Outcome {}
 
 class _Loaded extends _Outcome {
-  _Loaded(this.forecast, this.units);
+  _Loaded(this.forecast);
+
+  /// In metric units, as fetched.
   final Forecast forecast;
-  final Units units;
 }
 
 class _Failed extends _Outcome {

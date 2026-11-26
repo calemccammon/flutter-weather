@@ -38,9 +38,9 @@ void main() {
   });
 
   group('GetForecast', () {
-    test("asks for the place's point in the given units", () async {
-      await GetForecast(repository)(asheville, Units.imperial);
-      expect(repository.forecastRequests, [(35.6, -82.55, Units.imperial)]);
+    test("asks for the place's point", () async {
+      await GetForecast(repository)(asheville);
+      expect(repository.forecastRequests, [(35.6, -82.55)]);
     });
 
     test('brings a longitude from a wrapped map back into range', () async {
@@ -50,11 +50,10 @@ void main() {
       for (final turn in [360.0, -360.0]) {
         await getForecast(
           Place(name: 'Tokyo', latitude: 35.68, longitude: 139.69 + turn),
-          Units.metric,
         );
       }
 
-      for (final (_, longitude, _) in repository.forecastRequests) {
+      for (final (_, longitude) in repository.forecastRequests) {
         expect(longitude, closeTo(139.69, 1e-9));
       }
     });
@@ -67,7 +66,7 @@ void main() {
       ];
       for (final place in offTheGlobe) {
         await expectLater(
-          GetForecast(repository)(place, Units.metric),
+          GetForecast(repository)(place),
           throwsA(
             isA<WeatherException>().having(
               (e) => e.failure,
