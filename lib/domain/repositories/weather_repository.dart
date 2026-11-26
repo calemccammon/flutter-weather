@@ -1,6 +1,5 @@
 import '../models/forecast.dart';
 import '../models/place.dart';
-import '../models/units.dart';
 
 /// Where the app gets places and forecasts from.
 ///
@@ -10,11 +9,10 @@ abstract interface class WeatherRepository {
   /// Places whose name matches [query], best match first.
   Future<List<Place>> searchPlaces(String query);
 
-  /// Current conditions and the days ahead at a point.
+  /// Current conditions and the days ahead at a point, in metric units.
   Future<Forecast> forecast({
     required double latitude,
     required double longitude,
-    required Units units,
   });
 }
 

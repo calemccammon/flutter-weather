@@ -77,7 +77,7 @@ class FakeWeatherRepository implements WeatherRepository {
   /// Every unanswered search, in the order they were sent.
   final searchCalls = <Completer<List<Place>>>[];
   final forecasts = <Completer<Forecast>>[];
-  final forecastRequests = <(double, double, Units)>[];
+  final forecastRequests = <(double, double)>[];
 
   /// When set, searches answer with this at once.
   List<Place>? placesToReturn;
@@ -103,9 +103,8 @@ class FakeWeatherRepository implements WeatherRepository {
   Future<Forecast> forecast({
     required double latitude,
     required double longitude,
-    required Units units,
   }) {
-    forecastRequests.add((latitude, longitude, units));
+    forecastRequests.add((latitude, longitude));
     if (failure case final failure?) return Future.error(failure);
     if (forecastToReturn case final forecast?) return Future.value(forecast);
     final completer = Completer<Forecast>();

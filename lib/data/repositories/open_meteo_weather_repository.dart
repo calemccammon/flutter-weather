@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 
 import '../../domain/models/forecast.dart';
 import '../../domain/models/place.dart';
-import '../../domain/models/units.dart';
 import '../../domain/repositories/weather_repository.dart';
 import '../models/forecast_dto.dart';
 import '../models/json_reading.dart';
@@ -56,7 +55,6 @@ class OpenMeteoWeatherRepository implements WeatherRepository {
   Future<Forecast> forecast({
     required double latitude,
     required double longitude,
-    required Units units,
   }) async {
     final body = await _get(
       Uri.https(_forecastHost, '/v1/forecast', {
@@ -70,14 +68,10 @@ class OpenMeteoWeatherRepository implements WeatherRepository {
             'precipitation_probability_max',
         'forecast_days': '7',
         'timezone': 'auto',
-        'temperature_unit': switch (units) {
-          Units.metric => 'celsius',
-          Units.imperial => 'fahrenheit',
-        },
-        'wind_speed_unit': switch (units) {
-          Units.metric => 'kmh',
-          Units.imperial => 'mph',
-        },
+        // Always metric, as the domain's Forecast is; the app converts on the
+        // device, so changing units needs no request.
+        'temperature_unit': 'celsius',
+        'wind_speed_unit': 'kmh',
       }),
     );
     return _read(() => ForecastDto.fromJson(body).toDomain());

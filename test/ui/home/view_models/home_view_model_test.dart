@@ -52,17 +52,19 @@ Future<void> main() async {
 
     expect(state().place, PlaceUiModel.from(asheville, en));
     expect(state().forecast, isA<ForecastLoading>());
-    expect(repository.forecastRequests, [(35.6, -82.55, Units.imperial)]);
+    expect(repository.forecastRequests, [(35.6, -82.55)]);
 
     repository.forecasts.single.complete(sampleForecast());
     await settle();
 
+    // The forecast comes in metric and is shown in the saved Fahrenheit:
+    // 35.8 °C is 96 °F.
     expect(
       state().forecast,
       isA<ForecastLoaded>().having(
         (s) => s.forecast.current.temperature,
         'temperature',
-        '36°F',
+        '96°F',
       ),
     );
   });
@@ -204,8 +206,8 @@ Future<void> main() async {
       expect(state().units, UnitsUiModel.celsius);
     });
 
-    test('changing them saves the choice and asks for the forecast again in '
-        'the new ones', () async {
+    test('changing them saves the choice and converts the forecast on '
+        'screen, without asking again', () async {
       viewModel().select(asheville);
       repository.forecasts[0].complete(sampleForecast());
       await settle();
@@ -213,20 +215,23 @@ Future<void> main() async {
       viewModel().setUnits(UnitsUiModel.celsius);
 
       expect(state().units, UnitsUiModel.celsius);
-      expect(state().forecast, isA<ForecastLoading>());
-      expect(repository.forecastRequests.last.$3, Units.metric);
       expect(settings.saved, [Units.metric]);
+      expect(repository.forecastRequests, hasLength(1));
+      final shown = (state().forecast as ForecastLoaded).forecast;
+      expect(shown.current.temperature, '36°C');
+      expect(shown.current.wind, 'Wind 4 km/h');
 
-      repository.forecasts[1].complete(sampleForecast());
-      await settle();
+      viewModel().setUnits(UnitsUiModel.fahrenheit);
+
       expect(
         state().forecast,
         isA<ForecastLoaded>().having(
           (s) => s.forecast.current.temperature,
           'temperature',
-          '36°C',
+          '96°F',
         ),
       );
+      expect(repository.forecastRequests, hasLength(1));
     });
 
     test('choosing the units already in use does nothing', () async {
@@ -241,7 +246,7 @@ Future<void> main() async {
       expect(settings.saved, isEmpty);
     });
 
-    test('with no place selected, only the choice changes', () {
+    test('with no place selected, only the choice changes', () async {
       viewModel().setUnits(UnitsUiModel.celsius);
 
       expect(state().units, UnitsUiModel.celsius);
@@ -249,7 +254,16 @@ Future<void> main() async {
       expect(repository.forecastRequests, isEmpty);
 
       viewModel().select(asheville);
-      expect(repository.forecastRequests.single.$3, Units.metric);
+      repository.forecasts.single.complete(sampleForecast());
+      await settle();
+      expect(
+        state().forecast,
+        isA<ForecastLoaded>().having(
+          (s) => s.forecast.current.temperature,
+          'temperature',
+          '36°C',
+        ),
+      );
     });
 
     test('a choice that could not be saved still applies', () async {
@@ -261,14 +275,15 @@ Future<void> main() async {
       expect(state().units, UnitsUiModel.celsius);
     });
 
-    test('a forecast in the old units does not replace one in the '
-        'new', () async {
+    test('changing them while a forecast is on its way waits for it, and '
+        'shows it in the new ones', () async {
       viewModel().select(asheville);
       viewModel().setUnits(UnitsUiModel.celsius);
 
-      repository.forecasts[1].complete(sampleForecast());
-      await settle();
-      repository.forecasts[0].complete(sampleForecast());
+      expect(state().forecast, isA<ForecastLoading>());
+      expect(repository.forecastRequests, hasLength(1));
+
+      repository.forecasts.single.complete(sampleForecast());
       await settle();
 
       expect(

@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_weather/data/repositories/open_meteo_weather_repository.dart';
-import 'package:flutter_weather/domain/models/units.dart';
 import 'package:flutter_weather/domain/models/weather_condition.dart';
 import 'package:flutter_weather/domain/repositories/weather_repository.dart';
 import 'package:http/http.dart' as http;
@@ -123,11 +122,8 @@ void main() {
       final forecast = await repository.forecast(
         latitude: 35.6,
         longitude: -82.55,
-        units: Units.imperial,
       );
 
-      expect(asked?.queryParameters['temperature_unit'], 'fahrenheit');
-      expect(asked?.queryParameters['wind_speed_unit'], 'mph');
       expect(asked?.queryParameters['timezone'], 'auto');
       expect(forecast.current.observedAt, DateTime(2026, 11, 18, 9));
       expect(forecast.current.temperature, 35.8);
@@ -142,12 +138,12 @@ void main() {
       expect(forecast.days[1].precipitationChance, 1);
     });
 
-    test('asks in metric units when told to', () async {
+    test('always asks in metric units; the app converts them', () async {
       Uri? asked;
       await repositoryAnswering(
         forecastBody,
         onRequest: (uri) => asked = uri,
-      ).forecast(latitude: 1, longitude: 2, units: Units.metric);
+      ).forecast(latitude: 1, longitude: 2);
 
       expect(asked?.queryParameters['temperature_unit'], 'celsius');
       expect(asked?.queryParameters['wind_speed_unit'], 'kmh');
@@ -160,7 +156,7 @@ void main() {
       }, status: 400);
 
       await expectLater(
-        repository.forecast(latitude: 999, longitude: 0, units: Units.metric),
+        repository.forecast(latitude: 999, longitude: 0),
         throwsA(
           isA<WeatherException>()
               .having((e) => e.failure, 'failure', WeatherFailure.rejected)
@@ -198,7 +194,7 @@ void main() {
           repositoryAnswering(
             body,
             status: status,
-          ).forecast(latitude: 1, longitude: 2, units: Units.metric),
+          ).forecast(latitude: 1, longitude: 2),
           throwsA(
             isA<WeatherException>()
                 .having((e) => e.failure, 'failure', WeatherFailure.unavailable)
@@ -243,8 +239,7 @@ void main() {
       ];
       for (final body in bodies) {
         await expectLater(
-          repositoryAnswering(body)
-              .forecast(latitude: 1, longitude: 2, units: Units.metric),
+          repositoryAnswering(body).forecast(latitude: 1, longitude: 2),
           failsWith(WeatherFailure.badResponse),
           reason: '$body',
         );
@@ -260,7 +255,7 @@ void main() {
           MockClient((_) async => throw error),
         );
         await expectLater(
-          repository.forecast(latitude: 1, longitude: 2, units: Units.metric),
+          repository.forecast(latitude: 1, longitude: 2),
           failsWith(WeatherFailure.noConnection),
         );
       }
@@ -274,7 +269,7 @@ void main() {
         Object? error;
         unawaited(
           repository
-              .forecast(latitude: 1, longitude: 2, units: Units.metric)
+              .forecast(latitude: 1, longitude: 2)
               .then<void>((_) {}, onError: (Object e) => error = e),
         );
 
